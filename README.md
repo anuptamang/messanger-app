@@ -1,5 +1,5 @@
-# Facebook Messanger Clone App
-## Demo: 
+# Messanger App
+## Demo: https://messanger-app-1cf48.web.app/
 
 ## Technologies Used:
 - React
@@ -7,7 +7,6 @@
 - LocalStorage
 - Firebase DB, Auth, Hosting
 - Tailwind CSS
-- Dark Mode
 - Destructure
 - Spread
 - Template Literals

@@ -2,20 +2,25 @@ import React, {useState, useEffect, useRef} from 'react'
 import Message from './Message'
 
 import FlipMove from 'react-flip-move'
-import imgMessanger from './assets/images/messanger.png'
+import imgMessanger from './assets/images/messanger.webp'
 
 import db from './firebase'
 import firebase from 'firebase'
 import Login from './Login'
+import SendIcon from '@material-ui/icons/Send'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp'
+import Loader from './Loader'
 
 function App() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));  
+  const [isLoading, setLoader] = useState(false)
 
   const messagesEndRef = useRef(null);
+  
   const scrollToBottom = () => {
-    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current && messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   const sendMsgHandle = (e) => {
@@ -38,15 +43,21 @@ function App() {
 
   const loadMessages = () => {    
     db.collection('messages').orderBy('timestamp', 'asc').onSnapshot(snapshot => {
+      setLoader(true)
       setMessages(
         snapshot.docs.map(doc => ({id: doc.id, message: doc.data()}))
       )
     })
   }
 
+  const signOut = () => {
+    localStorage.removeItem('user')
+    setUser('')
+  }
+
   useEffect(() => {
     loadMessages()
-  }, [])
+  }, [isLoading])
 
   useEffect(scrollToBottom, [messages]);
 
@@ -55,42 +66,70 @@ function App() {
       {!user ? (
         <Login setUser={setUser} />
       ) : (
-        <div className="webpage bg-gray-100 dark:bg-gray-700 relative top-0 left-0 w-full h-full">
+        <div className="webpage bg-gray-700 relative top-0 left-0 w-full h-full">
           <div className="relative top-0 left-0 w-full h-screen">
-            <h1 className="text-xl md:text-3xl font-extrabold text-blue-400 mb-5 text-center flex items-center justify-center dark:text-white">
-              <div className="img mr-2">
-                <img src={imgMessanger} width="100" height="100" alt="" />
+            <div className="header">
+              <h1 className="text-xl md:text-3xl font-extrabold mb-5 pt-5 text-center flex items-center justify-center text-white">
+                <div className="img mr-2">
+                  <img src={imgMessanger} width="100" height="100" alt="" />
+                </div>
+                Messanger App
+              </h1>
+              <h2 className="text-white text-lg text-center">
+                Hello{' '}
+                <strong>
+                  <i>{user.name.split(' ')[0]}</i>
+                </strong>
+                , Welcome to the chat !
+              </h2>
+              <div
+                onClick={signOut}
+                className="logout absolute right-5 top-5 text-white cursor-pointer transition-all hover:opacity-75"
+              >
+                Logout <ExitToAppIcon className="fill-current text-white" />
               </div>
-              Facebook Messanger Clone
-            </h1>
-            <div className="messages-holder h-3/5 overflow-auto px-5">
-              <FlipMove>
-                {messages.map(({ id, message }) => (
-                  <Message key={id} message={message} user={user} />
-                ))}
-              </FlipMove>
-              <div ref={messagesEndRef} />
             </div>
-            <form className="absolute bottom-0 left-0 w-full p-5 bg-gray-100 dark:bg-gray-700 h-20">
+
+            {!isLoading ? (
+              <Loader />
+            ) : (
+              <div className="messages-holder h-4/6 overflow-y-auto px-5">
+                {messages.length === 0 && (
+                  <div className="no-messages pt-12 text-white text-center">
+                    There are no any messages ! Start the chat !
+                  </div>
+                )}
+                <FlipMove>
+                  {messages.map(({ id, message }) => (
+                    <Message key={id} message={message} user={user} />
+                  ))}
+                </FlipMove>
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+            <form className="absolute bottom-0 left-0 w-full p-5 bg-gray-700 h-20">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 type="text"
                 placeholder="Write your messege here..."
-                className="rounded-full bg-whitedark:bg-gray-500 dark:bg-gray-500 dark:text-gray-300 py-2 px-4 shadow-xl focus:outline-none pr-16 w-full"
+                className="rounded-full bg-gray-500 text-white py-2 px-4 shadow-xl focus:outline-none pr-16 w-full"
               />
 
               <button
                 type="submit"
                 onClick={sendMsgHandle}
-                className="absolute right-8 top-7 width-40 text-blue-500 focus:outline-none hover:opacity-70 transition-all"
-              ></button>
+                disabled={!input}
+                className="absolute right-8 top-1/2 transform -translate-y-1/2 width-40 text-blue-500 focus:outline-none hover:opacity-70 transition-all"
+              >
+                <SendIcon className="fill-current text-gray-100" />
+              </button>
             </form>
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }
 
 export default App;
