@@ -3,11 +3,15 @@
 
 ## Technologies Used:
 - React
+- Porps
+- State
 - Hooks
+- Refs
 - LocalStorage
 - Firebase DB, Auth, Hosting
-- Tailwind CSS
 - Destructure
 - Spread
 - Template Literals
 - Ternary Operators
+- Tailwind CSS
+- MaterialUI Icons
