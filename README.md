@@ -3,7 +3,7 @@
 
 ## Technologies Used:
 - React
-- Porps
+- Props
 - State
 - Hooks
 - Refs
