@@ -108,14 +108,12 @@ function App() {
               </div>
             )}
             <form className="absolute bottom-0 left-0 w-full p-5 bg-gray-700 h-20">
-              <input
+              <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                type="text"
                 placeholder="Write your messege here..."
-                className="rounded-full bg-gray-500 text-white py-2 px-4 shadow-xl focus:outline-none pr-16 w-full"
-              />
-
+                className="rounded-full bg-gray-500 text-white py-2 px-4 shadow-xl focus:outline-none pr-16 w-full h-10 resize-none"
+              ></textarea>
               <button
                 type="submit"
                 onClick={sendMsgHandle}
